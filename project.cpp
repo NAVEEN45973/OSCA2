@@ -3,7 +3,7 @@
 #include<queue>
 using namespace std;
 #define MAX 1000
-#define QUANTA 4
+#define TQ 4
 int flag[MAX],at[MAX],bt[MAX],pt[MAX],rt[MAX],ct[MAX],fe[MAX],fe_flag[MAX],pid[MAX],tms,qt[MAX];
 //at arrival time
 //bt burst time
@@ -11,7 +11,7 @@ int flag[MAX],at[MAX],bt[MAX],pt[MAX],rt[MAX],ct[MAX],fe[MAX],fe_flag[MAX],pid[M
 //pt priority
 //pid process id
 //ct completion time
-queue<int> q;  //RR queue
+queue<int> q;  
 void RR()
 {
       if(!q.empty())
@@ -36,19 +36,37 @@ void RR()
 }
 int main()
 {
-    int i=0,n=0,smallest=0,last_smallest=-1,min,sum=0,large=0;
+    int i=0,n=0,smallest=0,last_smallest=-1,min,sum=0,large=0,avgWT=0,avgTAT=0;
     printf("enter no of process\n");
     scanf("%d",&n);
     for(i=0;i<n;i++)
     {
     		printf("enter pid of process %d ",i);
-    		scanf("%d",&pid[i]); 
+    		scanf("%d",&pid[i]);
+			A: 
     		printf("enter arrival time :");
     		scanf("%d",&at[i]);
+    		if(at[i]<0)
+    		{ 
+    		  printf("\ninvalid plz reenter\n");
+    		  goto A;	
+			}
+			B:
     		printf("enter burst time :");
     		scanf("%d",&bt[i]);
+    		if(bt[i]<1)
+    		{
+    		  printf("\ninvalid plz reenter\n");
+    		  goto B;	
+			}
+    		C:
     		printf("enter priority no:");
 			scanf("%d",&pt[i]);
+			if(pt[i]<0)
+    		{
+    		  printf("\ninvalid plz reenter\n");
+    		  goto C;	
+			}
     		if(at[i]>large)
     		  	large=at[i];
     		  sum+=bt[i];
@@ -99,9 +117,9 @@ int main()
       if(smallest !=-1)
       	rt[smallest]--;
       
-      if((smallest !=-1) && ((rt[smallest]==0) ||(bt[smallest]-rt[smallest])==QUANTA))
+      if((smallest !=-1) && ((rt[smallest]==0) ||(bt[smallest]-rt[smallest])==TQ))
       {
-      	if((bt[smallest]-rt[smallest])==QUANTA && rt[smallest]!=0)
+      	if((bt[smallest]-rt[smallest])==TQ && rt[smallest]!=0)
       	{
       		flag[smallest]=1;
       		q.push(smallest);
@@ -110,13 +128,19 @@ int main()
        	{
           		ct[smallest]=tms+1;
           		flag[smallest]=1;
-        	}
+        }
       }
       last_smallest=smallest;
     }
-    printf("\n=====================================================================\n");
-    printf("PID\tAT\tBT\tCT\tWT\tTAT\n");
-   for(int i=0;i<n;i++)
-cout<<pid[i]<<"\t"<<at[i]<<"\t"<<bt[i]<<"\t"<<ct[i]<<"\t"<<ct[i]-bt[i]-at[i]<<"\t"<<ct[i]-at[i]<<endl;
-    return 0;
+    cout<<"\n=====================================================================\n";
+    cout<<"PID\tAT\tBT\tCT\tWT\tTAT\n";
+    for(int i=0;i<n;i++)
+    cout<<pid[i]<<"\t"<<at[i]<<"\t"<<bt[i]<<"\t"<<ct[i]<<"\t"<<ct[i]-bt[i]-at[i]<<"\t"<<ct[i]-at[i]<<endl;
+    for(int i=0;i<n;i++){
+    	avgWT=avgWT+ct[i]-bt[i]-at[i];
+    	avgTAT=avgTAT+ct[i]-at[i];
+	}
+	cout<<"\nAverage Waiting time : "<<avgWT/n;
+	cout<<"\nAverage TurnAround time : "<<avgTAT/n;
+	return 0;
 }
